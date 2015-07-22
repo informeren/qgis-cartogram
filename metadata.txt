@@ -1,0 +1,16 @@
+[general]
+name=Cartogram
+qgisMinimumVersion=2.8
+description=Create continuous area cartograms
+version=1.0.0
+author=Morten Wulff
+email=wulff@ratatosk.net
+# changelog=
+tags=geometry, layers, polygon, shapefile, processing
+# homepage=
+tracker=https://github.com/wulff/qgis-cartogram/issues
+repository=https://github.com/wulff/qgis-cartogram
+category=Vector
+icon=icon.png
+experimental=False
+deprecated=False
