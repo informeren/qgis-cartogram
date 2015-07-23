@@ -1,23 +1,3 @@
-#/***************************************************************************
-# Cartogram
-#
-# Create cartograms
-#							 -------------------
-#		begin				: 2015-07-15
-#		git sha				: $Format:%H$
-#		copyright			: (C) 2015 by Morten Wulff
-#		email				: wulff@ratatosk.net
-# ***************************************************************************/
-#
-#/***************************************************************************
-# *																		 *
-# *   This program is free software; you can redistribute it and/or modify  *
-# *   it under the terms of the GNU General Public License as published by  *
-# *   the Free Software Foundation; either version 2 of the License, or	 *
-# *   (at your option) any later version.								   *
-# *																		 *
-# ***************************************************************************/
-
 #################################################
 # Edit the following to match your sources lists
 #################################################
@@ -41,6 +21,7 @@ PLUGINNAME = cartogram
 PY_FILES = \
 	cartogram.py \
 	cartogram_dialog.py \
+	cartogram_worker.py \
 	__init__.py
 
 UI_FILES = cartogram_dialog_base.ui
@@ -57,7 +38,8 @@ PEP8EXCLUDE=pydev,resources_rc.py,conf.py,third_party,ui
 
 PLUGIN_UPLOAD = $(c)/plugin_upload.py
 
-RESOURCE_SRC=$(shell grep '^ *<file' resources.qrc | sed 's@</file>@@g;s/.*>//g' | tr '\n' ' ')
+RESOURCE_SRC=$(shell grep '^ *<file' resources.qrc | sed \
+	's@</file>@@g;s/.*>//g' | tr '\n' ' ')
 
 QGISDIR=.qgis2
 
@@ -65,10 +47,10 @@ default: compile
 
 compile: $(COMPILED_RESOURCE_FILES)
 
-%_rc.py : %.qrc $(RESOURCES_SRC)
-	pyrcc4 -o $*_rc.py  $<
+%_rc.py: %.qrc $(RESOURCES_SRC)
+	pyrcc4 -o $*_rc.py $<
 
-%.qm : %.ts
+%.qm: %.ts
 	$(LRELEASE) $<
 
 deploy: compile transcompile
@@ -79,7 +61,8 @@ deploy: compile transcompile
 	mkdir -p $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
 	cp -vf $(PY_FILES) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
 	cp -vf $(UI_FILES) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
-	cp -vf $(COMPILED_RESOURCE_FILES) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
+	cp -vf $(COMPILED_RESOURCE_FILES) \
+		$(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
 	cp -vf $(EXTRAS) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
 	cp -vfr i18n $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
 
@@ -89,7 +72,8 @@ dclean:
 	@echo "Removing any compiled python files."
 	@echo "-----------------------------------"
 	find $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME) -iname "*.pyc" -delete
-	find $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME) -iname ".git" -prune -exec rm -Rf {} \;
+	find $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME) -iname ".git" -prune \
+		-exec rm -Rf {} \;
 
 derase:
 	@echo
@@ -104,7 +88,8 @@ zip: deploy dclean
 	@echo "Creating plugin zip bundle."
 	@echo "---------------------------"
 	rm -f $(PLUGINNAME).zip
-	cd $(HOME)/$(QGISDIR)/python/plugins; zip -9r $(CURDIR)/$(PLUGINNAME).zip $(PLUGINNAME)
+	cd $(HOME)/$(QGISDIR)/python/plugins; zip -9r $(CURDIR)/$(PLUGINNAME).zip \
+		$(PLUGINNAME)
 
 package: compile
 	@echo
@@ -158,19 +143,14 @@ pylint:
 	@echo "Pylint violations"
 	@echo "-----------------"
 	@pylint --reports=n --rcfile=pylintrc . || true
-	@echo
-	@echo "----------------------"
-	@echo "If you get a 'no module named qgis.core' error, try sourcing"
-	@echo "the helper script we have provided first then run make pylint."
-	@echo "e.g. source run-env-linux.sh <path to qgis install>; make pylint"
-	@echo "----------------------"
 
 pep8:
 	@echo
 	@echo "-----------"
 	@echo "PEP8 issues"
 	@echo "-----------"
-	@pep8 --repeat --ignore=E203,E121,E122,E123,E124,E125,E126,E127,E128 --exclude $(PEP8EXCLUDE) . || true
+	@pep8 --repeat --ignore=E203,E121,E122,E123,E124,E125,E126,E127,E128 \
+		--exclude $(PEP8EXCLUDE) . || true
 	@echo "-----------"
 	@echo "Ignored in PEP8 check:"
 	@echo $(PEP8EXCLUDE)
