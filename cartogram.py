@@ -243,7 +243,7 @@ class Cartogram:
         path = geometry_type + '?crs=' + crs_id + '&index=yes'
 
         # create the memory layer and get a reference to the data provider
-        memory_layer = QgsVectorLayer(path, 'cartogram', 'memory')
+        memory_layer = QgsVectorLayer(path, 'Cartogram', 'memory')
         memory_layer_data_provider = memory_layer.dataProvider()
 
         # copy all attributes from the source layer to the memory layer
