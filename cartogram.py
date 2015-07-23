@@ -55,22 +55,29 @@ class Cartogram:
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
         # create action to display the settings dialog
-        self.action = QAction(
+        self.run_action = QAction(
             QIcon(':/plugins/cartogram/assets/icon.png'),
             self.tr(u'Create cartogram...'),
             self.iface.mainWindow())
 
-        # connect the action to the run method
-        self.action.triggered.connect(self.run)
+        self.demo_action = QAction(
+            self.tr(u'Add demo layer'),
+            self.iface.mainWindow())
 
-        # add toolbar button and menu item
-        self.iface.addToolBarIcon(self.action)
-        self.iface.addPluginToVectorMenu(self.menu, self.action)
+        # connect the actions to their respective methods
+        self.run_action.triggered.connect(self.run)
+        self.demo_action.triggered.connect(self.demo)
+
+        # add toolbar button and menu items
+        self.iface.addToolBarIcon(self.run_action)
+        self.iface.addPluginToVectorMenu(self.menu, self.run_action)
+        self.iface.addPluginToVectorMenu(self.menu, self.demo_action)
 
     def unload(self):
         """Removes the plugin menu item and icon from the QGIS GUI."""
-        self.iface.removePluginVectorMenu('&Cartogram', self.action)
-        self.iface.removeToolBarIcon(self.action)
+        self.iface.removePluginVectorMenu('&Cartogram', self.run_action)
+        self.iface.removePluginVectorMenu('&Cartogram', self.demo_action)
+        self.iface.removeToolBarIcon(self.run_action)
 
     def run(self):
         """Makes a few sanity checks and prepares the worker thread."""
@@ -115,6 +122,12 @@ class Cartogram:
         memory_layer_data_provider = memory_layer.dataProvider()
 
         self.worker_start(memory_layer, input_field, iterations)
+
+    def demo(self):
+        path = self.plugin_dir + '/demo/demo.shp'
+
+        layer = QgsVectorLayer(path, u'Cartogram demo layer', 'ogr')
+        QgsMapLayerRegistry.instance().addMapLayer(layer)
 
     def worker_start(self, layer, field_name, iterations):
         """Start a worker instance on a background thread."""
