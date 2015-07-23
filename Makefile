@@ -26,7 +26,9 @@ PY_FILES = \
 
 UI_FILES = cartogram_dialog_base.ui
 
-EXTRAS = icon.png metadata.txt
+EXTRAS = metadata.txt
+ASSETS = icon.png
+DEMO = demo.dbf demo.prj demo.qpj demo.shp demo.shx
 
 COMPILED_RESOURCE_FILES = resources_rc.py
 
@@ -62,6 +64,10 @@ deploy: compile transcompile
 	cp -vf $(COMPILED_RESOURCE_FILES) \
 		$(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
 	cp -vf $(EXTRAS) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
+	mkdir -p $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)/assets
+	cp -vf $(addprefix ./assets/, $(ASSETS)) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)/assets
+	mkdir -p $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)/demo
+	cp -vf $(addprefix ./demo/, $(DEMO)) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)/demo
 	cp -vfr i18n $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
 
 dclean:
