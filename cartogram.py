@@ -1,11 +1,14 @@
-from PyQt4.QtCore import Qt, QSettings, QTranslator, qVersion, QCoreApplication
-from PyQt4.QtGui import (QAction, QDialog, QFileDialog, QIcon, QMessageBox,
-    QProgressBar)
+from PyQt4.QtCore import (Qt, QCoreApplication, QSettings, QThread,
+    QTranslator, qVersion)
+from PyQt4.QtGui import (QAction, QPushButton, QDialog, QFileDialog, QIcon,
+    QLabel, QMessageBox, QProgressBar)
 from qgis.core import (QGis, QgsDistanceArea, QgsGeometry, QgsMapLayer,
     QgsMapLayerRegistry, QgsMessageLog, QgsPoint, QgsVectorFileWriter,
     QgsVectorLayer)
 from qgis.gui import QgsFieldProxyModel, QgsMapLayerProxyModel, QgsMessageBar
+
 from cartogram_dialog import CartogramDialog
+from cartogram_worker import CartogramWorker
 
 import math
 import os.path
@@ -83,14 +86,6 @@ class Cartogram:
                 'Error', message, level=QgsMessageBar.CRITICAL, duration=10)
             return False
 
-        # prepare the progress bar
-        self.progress = QProgressBar()
-        self.progress.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
-
-        self.progress_msg_bar = self.iface.messageBar().createMessage(
-            'Creating cartogram...')
-        self.progress_msg_bar.layout().addWidget(self.progress)
-
         # we are only interested in polygon layers and numeric fields
         self.dialog.sourceLayerCombo.setFilters(
             QgsMapLayerProxyModel.PolygonLayer)
@@ -115,160 +110,71 @@ class Cartogram:
         input_field = self.dialog.sourceFieldCombo.currentText()
         iterations = self.dialog.iterationsSpinBox.value()
 
-        self.cartogram(input_layer, input_field, iterations)
-
-    def cartogram(self, layer, field_name, iterations):
-        crs = layer.crs()
-        data_provider = layer.dataProvider()
-
-        # initialize the progress bar
-        feature_count = data_provider.featureCount()
-        self.progress.setMaximum(iterations * feature_count)
-        self.iface.messageBar().pushWidget(self.progress_msg_bar,
-            self.iface.messageBar().INFO)
-
-        memory_layer = self.create_memory_layer(layer)
+        memory_layer = self.create_memory_layer(input_layer)
         memory_layer_data_provider = memory_layer.dataProvider()
 
-        steps = 0
-        for i in range(iterations):
-            (meta_features,
-                force_reduction_factor) = self.get_reduction_factor(
-                memory_layer, field_name)
+        self.worker_start(memory_layer, input_field, iterations)
 
-            # memory_layer.startEditing()
+    def worker_start(self, layer, field_name, iterations):
+        """Start a worker instance on a background thread."""
+        worker = CartogramWorker(layer, field_name, iterations)
 
-            for feature in memory_layer_data_provider.getFeatures():
-                steps += 1
-                self.progress.setValue(steps)
-                old_geometry = feature.geometry()
-                new_geometry = self.transform(meta_features,
-                    force_reduction_factor, old_geometry)
+        message_bar = self.iface.messageBar().createMessage('')
 
-                memory_layer_data_provider.changeGeometryValues({
-                    feature.id() : new_geometry})
+        label = QLabel('Creating cartogram...')
+        label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
 
-            # memory_layer.commitChanges()
+        progress_bar = QProgressBar()
+        progress_bar.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        progress_bar.setMaximum(iterations * layer.featureCount())
 
-        self.iface.messageBar().clearWidgets()
+        cancel_button = QPushButton()
+        cancel_button.setText(self.tr(u'Cancel'))
+        cancel_button.clicked.connect(worker.kill)
 
-        QgsMapLayerRegistry.instance().addMapLayer(memory_layer)
+        message_bar.layout().addWidget(label)
+        message_bar.layout().addWidget(progress_bar)
+        message_bar.layout().addWidget(cancel_button)
 
-    def get_reduction_factor(self, layer, field):
-        """Calculate the reduction factor."""
-        data_provider = layer.dataProvider()
-        meta_features = []
+        self.iface.messageBar().pushWidget(message_bar,
+            self.iface.messageBar().INFO)
+        self.message_bar = message_bar
 
-        total_area = 0.0
-        total_value = 0.0
+        # start the worker in a new thread
+        thread = QThread()
+        worker.moveToThread(thread)
 
-        for feature in data_provider.getFeatures():
-            meta_feature = MetaFeature()
+        # connect some odds and ends
+        worker.finished.connect(self.worker_finished)
+        worker.error.connect(self.worker_error)
+        worker.progress.connect(progress_bar.setValue)
+        thread.started.connect(worker.run)
 
-            geometry = QgsGeometry(feature.geometry())
+        thread.start()
 
-            area = QgsDistanceArea().measure(geometry)
-            total_area += area
+        self.thread = thread
+        self.worker = worker
 
-            feature_value = feature.attribute(field)
-            total_value += feature_value
+    def worker_finished(self, layer):
+        """Clean up after the worker and the thread."""
 
-            meta_feature.area = area
-            meta_feature.value = feature_value
+        self.worker.deleteLater()
+        self.thread.quit()
+        self.thread.wait()
+        self.thread.deleteLater()
 
-            centroid = geometry.centroid()
-            (cx, cy) = centroid.asPoint().x(), centroid.asPoint().y()
-            meta_feature.center_x = cx
-            meta_feature.center_y = cy
+        self.iface.messageBar().popWidget(self.message_bar)
 
-            meta_features.append(meta_feature)
-
-        fraction = total_area / total_value
-
-        total_size_error = 0
-
-        for meta_feature in meta_features:
-            polygon_value = meta_feature.value
-            polygon_area = meta_feature.area
-
-            if polygon_area < 0:
-                polygon_area = 0
-
-            # this is our 'desired' area...
-            desired_area = polygon_value * fraction
-
-            # calculate radius, a zero area is zero radius
-            radius = math.sqrt(polygon_area / math.pi)
-            meta_feature.radius = radius
-
-            if desired_area / math.pi > 0:
-                mass = math.sqrt(desired_area / math.pi) - radius
-                meta_feature.mass = mass
-            else:
-                meta_feature.mass = 0
-
-            size_error = max(polygon_area, desired_area) / \
-                min(polygon_area, desired_area)
-
-            total_size_error += size_error
-
-        average_error = total_size_error / len(meta_features)
-        force_reduction_factor = 1 / (average_error + 1)
-
-        return (meta_features, force_reduction_factor)
-
-    def transform_polygon(self, polygon, meta_features,
-        force_reduction_factor):
-        """Transform the geometry of a single polygon."""
-        new_line = []
-        new_polygon = []
-
-        for line in polygon:
-            for point in line:
-                x = x0 = point.x()
-                y = y0 = point.y()
-                # Compute the influence of all shapes on this point
-                for feature in meta_features:
-                    cx = feature.center_x
-                    cy = feature.center_y
-                    distance = math.sqrt((x0 - cx) ** 2 + (y0 - cy) ** 2)
-
-                    if (distance > feature.radius):
-                        # Calculate the force on verteces far away
-                        # from the centroid of this feature
-                        Fij = feature.mass * feature.radius / distance
-                    else:
-                        # Calculate the force on verteces far away
-                        # from the centroid of this feature
-                        xF = distance / feature.radius
-                        Fij = feature.mass * (xF ** 2) * (4 - (3 * xF))
-                    Fij = Fij * force_reduction_factor / distance
-                    x = (x0 - cx) * Fij + x
-                    y = (y0 - cy) * Fij + y
-                new_line.append(QgsPoint(x, y))
-            new_polygon.append(new_line)
-            new_line = []
-
-        return new_polygon
-
-    def transform(self, meta_features,
-        force_reduction_factor, geometry):
-        """Transform the geometry based on the force reduction factor."""
-
-        if geometry.isMultipart():
-            geometries = []
-            for polygon in geometry.asMultiPolygon():
-                new_polygon = self.transform_polygon(polygon, meta_features,
-                    force_reduction_factor)
-                geometries.append(new_polygon)
-            return QgsGeometry.fromMultiPolygon(geometries)
+        if layer is not None:
+            QgsMapLayerRegistry.instance().addMapLayer(layer)
         else:
-            polygon = geometry.asPolygon()
-            new_polygon = self.transform_polygon(polygon, meta_features,
-                force_reduction_factor)
-            return QgsGeometry.fromPolygon(new_polygon)
+            message = 'Cartogram creation cancelled by user.'
+            self.iface.messageBar().pushMessage(message,
+                level=QgsMessageBar.INFO, duration=3)
 
-        return geometry
+    def worker_error(self, e, exception_string):
+        message = 'Worker thread exception:\n'.format(exception_string)
+        QgsMessageLog.logMessage(message, level=QgsMessageLog.CRITICAL)
 
     def validate(self):
         """Make sure that all fields have valid values."""
@@ -328,7 +234,8 @@ class Cartogram:
 
         # copy all attributes from the source layer to the memory layer
         memory_layer.startEditing()
-        memory_layer_data_provider.addAttributes(data_provider.fields().toList())
+        memory_layer_data_provider.addAttributes(
+            data_provider.fields().toList())
         memory_layer.commitChanges()
 
         # copy all features from the source layer to the memory layer
@@ -336,15 +243,3 @@ class Cartogram:
             memory_layer_data_provider.addFeatures([feature])
 
         return memory_layer
-
-
-class MetaFeature(object):
-    """Stores various calculated values for each feature."""
-
-    def __init__(self):
-        self.center_x = -1
-        self.center_y = -1
-        self.value = -1
-        self.area = -1
-        self.mass = -1
-        self.radius = -1
