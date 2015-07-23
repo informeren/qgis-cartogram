@@ -5,7 +5,7 @@ QGIS Cartogram
 
 A GQIS plugin for creating cartograms based on polygon layers.
 
-This plugin is an updated version of the [cartogram plugin](https://github.com/carsonfarmer/cartogram) by Carson Farmer. It is based on an algorithm proposed in the following paper:
+This plugin is an updated version of the [cartogram plugin](https://github.com/carsonfarmer/cartogram) by Carson Farmer which is based on an algorithm proposed in the following paper:
 
 > Dougenik, J. A, N. R. Chrisman, and D. R. Niemeyer. 1985. "An algorithm to construct continuous cartograms." Professional Geographer 37:75-81 
 
