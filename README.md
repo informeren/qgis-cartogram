@@ -15,7 +15,7 @@ This plugin is based on the template provided by the [Plugin Builder](https://pl
 Try it out
 ----------
 
-To see the plugin in action simply import the demo data included with the plugin (*Vector → Cartogram → Add demo layer*). Then you can click the Cartogram button on the toolbar or select *Vector → Cartogram → Create cartogram…*.
+To see the plugin in action simply import the demo data included with the plugin (*Vector → Cartogram → Add demo layer*). Then you can click the Cartogram button on the toolbar or select *Vector → Cartogram → Create cartogram*.
 
 ![Configure the cartogram creator](https://github.com/informeren/qgis-cartogram/raw/develop/assets/screenshot-setup.png)
 
