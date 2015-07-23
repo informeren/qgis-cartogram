@@ -56,7 +56,7 @@ class Cartogram:
 
         # create action to display the settings dialog
         self.action = QAction(
-            QIcon(':/plugins/cartogram/icon.png'),
+            QIcon(':/plugins/cartogram/assets/icon.png'),
             self.tr(u'Create cartogram...'),
             self.iface.mainWindow())
 
@@ -83,7 +83,7 @@ class Cartogram:
             message = self.tr(u'You need at least one vector layer to create a \
                 cartogram.')
             self.iface.messageBar().pushMessage(
-                'Error', message, level=QgsMessageBar.CRITICAL, duration=10)
+                'Error', message, level=QgsMessageBar.CRITICAL, duration=5)
             return False
 
         # we are only interested in polygon layers and numeric fields

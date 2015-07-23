@@ -8,6 +8,6 @@ tags=geometry, layers, polygon, shapefile, processing
 tracker=https://github.com/wulff/qgis-cartogram/issues
 repository=https://github.com/wulff/qgis-cartogram
 category=Vector
-icon=icon.png
+icon=assets/icon.png
 experimental=False
 deprecated=False

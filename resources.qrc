@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/plugins/cartogram" >
+    <qresource prefix="/plugins/cartogram/assets" >
         <file>icon.png</file>
     </qresource>
 </RCC>
