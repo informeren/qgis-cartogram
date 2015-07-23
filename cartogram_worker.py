@@ -1,18 +1,16 @@
-from PyQt4 import QtCore  # from PyQt4.QtCore import pyqtSignal, QObject
+from PyQt4.QtCore import pyqtSignal, QObject
 from qgis.core import QgsDistanceArea, QgsGeometry, QgsMessageLog, QgsPoint
-
-# from PyQt4 import QtCore  # pyqtSignal, QObject
 
 import math
 import traceback
 
 
-class CartogramWorker(QtCore.QObject):
+class CartogramWorker(QObject):
     """Background worker which actually creates the cartogram."""
 
     def __init__(self, layer, field_name, iterations):
         """Constructor."""
-        QtCore.QObject.__init__(self)
+        QObject.__init__(self)
 
         self.layer = layer
         self.field_name = field_name
@@ -178,9 +176,9 @@ class CartogramWorker(QtCore.QObject):
 
         return new_polygon
 
-    finished = QtCore.pyqtSignal(object)
-    error = QtCore.pyqtSignal(Exception, basestring)
-    progress = QtCore.pyqtSignal(float)
+    finished = pyqtSignal(object)
+    error = pyqtSignal(Exception, basestring)
+    progress = pyqtSignal(float)
 
 
 class MetaFeature(object):

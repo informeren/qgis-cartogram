@@ -73,7 +73,8 @@ class Cartogram:
         self.iface.removeToolBarIcon(self.action)
 
     def run(self):
-        """Run method that performs all the real work."""
+        """Makes a few sanity checks and prepares the worker thread."""
+
         # create the dialog (after translation) and keep reference
         self.dialog = CartogramDialog()
 
