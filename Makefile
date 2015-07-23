@@ -36,8 +36,6 @@ PEP8EXCLUDE=pydev,resources_rc.py,conf.py,third_party,ui
 # Normally you would not need to edit below here
 #################################################
 
-PLUGIN_UPLOAD = $(c)/plugin_upload.py
-
 RESOURCE_SRC=$(shell grep '^ *<file' resources.qrc | sed \
 	's@</file>@@g;s/.*>//g' | tr '\n' ' ')
 
@@ -99,13 +97,6 @@ package: compile
 	rm -f $(PLUGINNAME).zip
 	git archive --prefix=$(PLUGINNAME)/ -o $(PLUGINNAME).zip $(VERSION)
 	echo "Created package: $(PLUGINNAME).zip"
-
-upload: zip
-	@echo
-	@echo "-------------------------------------"
-	@echo "Uploading plugin to QGIS Plugin repo."
-	@echo "-------------------------------------"
-	$(PLUGIN_UPLOAD) $(PLUGINNAME).zip
 
 transup:
 	@echo
