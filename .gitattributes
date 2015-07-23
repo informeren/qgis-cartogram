@@ -2,8 +2,9 @@
 .gitignore export-ignore
 assets/cartogram.png export-ignore
 assets/screenshot-setup.png export-ignore
-assets/screenshot-workint.png export-ignore
+assets/screenshot-working.png export-ignore
 demo/demo.geojson export-ignore
+i18n/da.ts export-ignore
 Makefile export-ignore
 pylintrc export-ignore
 resources.qrc export-ignore
