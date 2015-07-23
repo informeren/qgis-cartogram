@@ -8,5 +8,5 @@ i18n/da.ts export-ignore
 Makefile export-ignore
 pylintrc export-ignore
 resources.qrc export-ignore
-scripts/* export-ignore
+scripts export-ignore
 
