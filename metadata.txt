@@ -2,8 +2,10 @@
 name=Cartogram
 qgisMinimumVersion=2.8
 description=Create continuous area cartograms
+about=An updated version of the cartogram plugin by Carson Farmer. This version adds support for memory layers and background processing.
 version=1.0.0
-author=Carson Farmer, Morten Wulff
+author=Morten Wulff
+email=wulff@ratatosk.net
 tags=geometry, layers, polygon, shapefile
 tracker=https://github.com/informeren/qgis-cartogram/issues
 repository=https://github.com/informeren/qgis-cartogram
