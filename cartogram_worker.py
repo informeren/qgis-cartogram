@@ -23,10 +23,7 @@ class CartogramWorker(QObject):
         try:
             feature_count = self.layer.featureCount()
 
-            step = feature_count // 1000
-            if step < 2:
-                step = 2
-
+            step = self.get_step()
             steps = 0
 
             for i in range(self.iterations):
@@ -179,6 +176,21 @@ class CartogramWorker(QObject):
     finished = pyqtSignal(object)
     error = pyqtSignal(Exception, basestring)
     progress = pyqtSignal(float)
+
+    def get_step(self):
+        """Determine how often the progress bar should be updated."""
+
+        feature_count = self.layer.featureCount()
+
+        # update the progress bar at each .1% increment
+        step = feature_count // 1000
+
+        # because we use modulo to determine if we should emit the progress
+        # signal, the step needs to be greater than 1
+        if step < 2:
+            step = 2
+
+        return step
 
 
 class MetaFeature(object):
