@@ -49,7 +49,7 @@ class Cartogram:
 
         # declare instance attributes
         self.action = None
-        self.menu = self.tr(u'&Cartogram')
+        self.menu = self.tr('&Cartogram')
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
@@ -57,11 +57,11 @@ class Cartogram:
         # create action to display the settings dialog
         self.run_action = QAction(
             QIcon(':/plugins/cartogram/assets/icon.png'),
-            self.tr(u'Create cartogram...'),
+            self.tr('Create cartogram...'),
             self.iface.mainWindow())
 
         self.demo_action = QAction(
-            self.tr(u'Add demo layer'),
+            self.tr('Add demo layer'),
             self.iface.mainWindow())
 
         # connect the actions to their respective methods
@@ -88,10 +88,10 @@ class Cartogram:
         # make sure we have at least one vector layer to work on
         count = self.count_vector_layers()
         if count == 0:
-            message = self.tr(u'You need at least one vector layer to create a \
-                cartogram.')
-            self.iface.messageBar().pushMessage(
-                'Error', message, level=QgsMessageBar.CRITICAL, duration=5)
+            message = self.tr('You need at least one vector layer to create a '
+                'cartogram.')
+            self.iface.messageBar().pushMessage('Error', message,
+                level=QgsMessageBar.CRITICAL, duration=5)
             return False
 
         # we are only interested in polygon layers and numeric fields
@@ -126,7 +126,7 @@ class Cartogram:
     def demo(self):
         path = self.plugin_dir + '/demo/demo.shp'
 
-        layer = QgsVectorLayer(path, u'Cartogram demo layer', 'ogr')
+        layer = QgsVectorLayer(path, 'Cartogram demo layer', 'ogr')
         QgsMapLayerRegistry.instance().addMapLayer(layer)
 
     def worker_start(self, layer, field_name, iterations):
@@ -143,7 +143,7 @@ class Cartogram:
         progress_bar.setMaximum(iterations * layer.featureCount())
 
         cancel_button = QPushButton()
-        cancel_button.setText(self.tr(u'Cancel'))
+        cancel_button.setText(self.tr('Cancel'))
         cancel_button.clicked.connect(worker.kill)
 
         message_bar.layout().addWidget(label)
@@ -182,7 +182,7 @@ class Cartogram:
         if layer is not None:
             QgsMapLayerRegistry.instance().addMapLayer(layer)
         else:
-            message = 'Cartogram creation cancelled by user.'
+            message = self.tr('Cartogram creation cancelled by user.')
             self.iface.messageBar().pushMessage(message,
                 level=QgsMessageBar.INFO, duration=3)
 
@@ -194,9 +194,9 @@ class Cartogram:
         """Make sure that all fields have valid values."""
         message = ''
         if not self.dialog.sourceLayerCombo.currentText():
-            message += self.tr(u'Please select an input layer.\n')
+            message += self.tr('Please select an input layer.')
         if not self.dialog.sourceFieldCombo.currentText():
-            message += self.tr(u'Please select an area field.\n')
+            message += self.tr('Please select an area field.')
 
         if message:
             QMessageBox.warning(self.dialog, 'Cartogram', message)
