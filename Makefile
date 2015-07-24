@@ -21,6 +21,7 @@ PLUGINNAME = cartogram
 PY_FILES = \
 	cartogram.py \
 	cartogram_dialog.py \
+	cartogram_feature.py \
 	cartogram_worker.py \
 	__init__.py
 

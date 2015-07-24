@@ -1,6 +1,8 @@
 from PyQt4.QtCore import pyqtSignal, QObject
 from qgis.core import QgsDistanceArea, QgsGeometry, QgsMessageLog, QgsPoint
 
+from cartogram_feature import CartogramFeature
+
 import math
 import traceback
 
@@ -66,7 +68,7 @@ class CartogramWorker(QObject):
         total_value = 0.0
 
         for feature in data_provider.getFeatures():
-            meta_feature = MetaFeature()
+            meta_feature = CartogramFeature()
 
             geometry = QgsGeometry(feature.geometry())
 
@@ -191,15 +193,3 @@ class CartogramWorker(QObject):
             step = 2
 
         return step
-
-
-class MetaFeature(object):
-    """Stores various calculated values for each feature."""
-
-    def __init__(self):
-        self.center_x = -1
-        self.center_y = -1
-        self.value = -1
-        self.area = -1
-        self.mass = -1
-        self.radius = -1
