@@ -1,54 +1,57 @@
 #!/bin/bash
-LOCALES=$*
 
-# Get newest .py files so we don't update strings unnecessarily
+set -e
 
-CHANGED_FILES=0
-PYTHON_FILES=`find . -regex ".*\(ui\|py\)$" -type f`
-for PYTHON_FILE in $PYTHON_FILES
+locales=$*
+
+# get newest .py and .ui files so we don't update strings unnecessarily
+
+changed_files=0
+python_files=$(find . -regex ".*\(ui\|py\)$" -type f)
+for python_file in $python_files
 do
-  CHANGED=$(stat -c %Y $PYTHON_FILE)
-  if [ ${CHANGED} -gt ${CHANGED_FILES} ]
+  changed=$(stat -c %Y "$python_file")
+  if [ "${changed}" -gt "${changed_files}" ]
   then
-    CHANGED_FILES=${CHANGED}
+    changed_files=${changed}
   fi
 done
 
 # Qt translation stuff
 # for .ts file
-UPDATE=false
-for LOCALE in ${LOCALES}
+update=false
+for locale in ${locales}
 do
-  TRANSLATION_FILE="i18n/$LOCALE.ts"
-  if [ ! -f ${TRANSLATION_FILE} ]
+  translation_file="i18n/$locale.ts"
+  if [ ! -f "${translation_file}" ]
   then
     # Force translation string collection as we have a new language file
-    touch ${TRANSLATION_FILE}
-    UPDATE=true
+    touch "${translation_file}"
+    update=true
     break
   fi
 
-  MODIFICATION_TIME=$(stat -c %Y ${TRANSLATION_FILE})
-  if [ ${CHANGED_FILES} -gt ${MODIFICATION_TIME} ]
+  modification_time=$(stat -c %Y "${translation_file}")
+  if [ "${changed_files}" -gt "${modification_time}" ]
   then
     # Force translation string collection as a .py file has been updated
-    UPDATE=true
+    update=true
     break
   fi
 done
 
-if [ ${UPDATE} == true ]
+if [ ${update} == true ]
 # retrieve all python files
 then
-  echo ${PYTHON_FILES}
+  echo "${python_files}"
   # update .ts
   echo "Please provide translations by editing the translation files below:"
-  for LOCALE in ${LOCALES}
+  for locale in ${locales}
   do
-    echo "i18n/"${LOCALE}".ts"
+    echo "i18n/${locale}.ts"
     # Note we don't use pylupdate with qt .pro file approach as it is flakey
     # about what is made available.
-    pylupdate4 -noobsolete ${PYTHON_FILES} -ts i18n/${LOCALE}.ts
+    pylupdate4 -noobsolete ${python_files//\\n/ } -ts "i18n/${locale}.ts"
   done
 else
   echo "No need to edit any translation files (.ts) because no python files"
