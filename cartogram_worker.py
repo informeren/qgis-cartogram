@@ -10,6 +10,10 @@ import traceback
 class CartogramWorker(QObject):
     """Background worker which actually creates the cartogram."""
 
+    finished = pyqtSignal(object)
+    error = pyqtSignal(Exception, basestring)
+    progress = pyqtSignal(float)
+
     def __init__(self, layer, field_name, iterations):
         """Constructor."""
         QObject.__init__(self)
@@ -22,6 +26,7 @@ class CartogramWorker(QObject):
 
     def run(self):
         ret = None
+
         try:
             feature_count = self.layer.featureCount()
 
@@ -138,8 +143,6 @@ class CartogramWorker(QObject):
                 force_reduction_factor)
             return QgsGeometry.fromPolygon(new_polygon)
 
-        return geometry
-
     def transform_polygon(self, polygon, meta_features,
         force_reduction_factor):
         """Transform the geometry of a single polygon."""
@@ -174,10 +177,6 @@ class CartogramWorker(QObject):
             new_line = []
 
         return new_polygon
-
-    finished = pyqtSignal(object)
-    error = pyqtSignal(Exception, basestring)
-    progress = pyqtSignal(float)
 
     def get_step(self):
         """Determine how often the progress bar should be updated."""
