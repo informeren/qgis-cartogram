@@ -3,7 +3,7 @@ QGIS Cartogram
 
 [![Code Climate](https://codeclimate.com/github/informeren/qgis-cartogram/badges/gpa.svg)](https://codeclimate.com/github/informeren/qgis-cartogram)
 
-A GQIS plugin for creating cartograms based on polygon layers.
+A QGIS plugin for creating cartograms based on polygon layers.
 
 This plugin is an updated version of the [cartogram plugin](https://github.com/carsonfarmer/cartogram) by Carson Farmer which is based on an algorithm proposed in the following paper:
 
