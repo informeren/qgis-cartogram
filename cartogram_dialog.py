@@ -1,5 +1,4 @@
 from PyQt4 import QtGui, uic
-from qgis.gui import QgsFieldComboBox, QgsMapLayerComboBox
 
 import os
 
