@@ -33,7 +33,7 @@ DEMO = demo.dbf demo.prj demo.qpj demo.shp demo.shx
 
 COMPILED_RESOURCE_FILES = cartogram_dialog.py resources_rc.py
 
-PEP8EXCLUDE=pydev,resources_rc.py,conf.py,third_party,ui
+PEP8EXCLUDE=pydev,resources_rc.py,conf.py,cartogram_dialog.py,third_party,ui
 
 #################################################
 # Normally you would not need to edit below here
