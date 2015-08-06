@@ -25,7 +25,7 @@ PY_FILES = \
 	cartogram_worker.py \
 	__init__.py
 
-UI_FILES = cartogram_dialog_base.ui
+UI_FILES = cartogram_dialog.ui
 
 EXTRAS = metadata.txt
 ASSETS = icon.png
