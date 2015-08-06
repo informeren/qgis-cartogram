@@ -1,6 +1,7 @@
-import os
-
 from PyQt4 import QtGui, uic
+from qgis.gui import QgsFieldComboBox, QgsMapLayerComboBox
+
+import os
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'cartogram_dialog_base.ui'))
