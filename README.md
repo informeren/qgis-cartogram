@@ -34,3 +34,17 @@ Further reading
 * [Search for 'An algorithm to construct continuous cartograms' on Google Scholar](https://scholar.google.dk/scholar?q=an+algorithm+to+construct+continuous+area+cartograms)
 * [Constructing Contiguous Area Cartogram uUsing ArcView Avenue](http://proceedings.esri.com/library/userconf/proc99/proceed/papers/pap489/p489.htm)
 * [def CreateRubberSheetCartogram](http://indiemaps.com/blog/2008/03/def-createrubbersheetcartogram/)
+
+
+License
+-------
+
+QGIS Cartogram – a plugin for creating cartograms from polygon layers  
+Copyright (C) 2015  Morten Wulff
+Copyright (C) 2013  Carson Farmer
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
