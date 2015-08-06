@@ -4,7 +4,7 @@ from qgis.gui import QgsFieldComboBox, QgsMapLayerComboBox
 import os
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'cartogram_dialog_base.ui'))
+    os.path.dirname(__file__), 'cartogram_dialog.ui'))
 
 
 class CartogramDialog(QtGui.QDialog, FORM_CLASS):
