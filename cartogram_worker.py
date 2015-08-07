@@ -146,6 +146,7 @@ class CartogramWorker(QObject):
     def transform_polygon(self, polygon, meta_features,
         force_reduction_factor):
         """Transform the geometry of a single polygon."""
+
         new_line = []
         new_polygon = []
 
@@ -153,6 +154,7 @@ class CartogramWorker(QObject):
             for point in line:
                 x = x0 = point.x()
                 y = y0 = point.y()
+
                 # compute the influence of all shapes on this point
                 for feature in meta_features:
                     cx = feature.center_x
