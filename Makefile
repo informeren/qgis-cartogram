@@ -10,12 +10,6 @@ LOCALES = da
 # lrelease binary.
 LRELEASE = lrelease
 
-# translation
-SOURCES = \
-	__init__.py \
-	cartogram.py \
-	cartogram_dialog.py
-
 PLUGINNAME = cartogram
 
 PY_FILES = \
@@ -29,11 +23,10 @@ UI_FILES = cartogram_dialog.ui
 
 EXTRAS = metadata.txt
 ASSETS = icon.png
-DEMO = demo.dbf demo.prj demo.qpj demo.shp demo.shx
 
 COMPILED_RESOURCE_FILES = cartogram_dialog.py resources_rc.py
 
-PEP8EXCLUDE=pydev,resources_rc.py,conf.py,cartogram_dialog.py,third_party,ui
+PEP8EXCLUDE=cartogram_dialog.py,resources_rc.py
 
 #################################################
 # Normally you would not need to edit below here
@@ -70,8 +63,7 @@ deploy: compile transcompile
 	cp -vf $(EXTRAS) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
 	mkdir -p $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)/assets
 	cp -vf $(addprefix ./assets/, $(ASSETS)) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)/assets
-	mkdir -p $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)/demo
-	cp -vf $(addprefix ./demo/, $(DEMO)) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)/demo
+	cp -vfr demo $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
 	cp -vfr i18n $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
 
 dclean:
