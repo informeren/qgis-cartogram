@@ -1,7 +1,7 @@
 from PyQt4.QtCore import (Qt, QCoreApplication, QSettings, QThread,
     QTranslator, qVersion)
-from PyQt4.QtGui import (QAction, QPushButton, QDialog, QFileDialog, QIcon,
-    QLabel, QMessageBox, QProgressBar)
+from PyQt4.QtGui import (QAction, QPushButton, QDialog, QIcon, QLabel,
+    QMessageBox, QProgressBar)
 from qgis.core import (QGis, QgsDistanceArea, QgsGeometry, QgsMapLayer,
     QgsMapLayerRegistry, QgsMessageLog, QgsPoint, QgsVectorFileWriter,
     QgsVectorLayer)
@@ -124,6 +124,7 @@ class Cartogram:
         self.worker_start(memory_layer, input_field, iterations)
 
     def demo(self):
+        # TODO: use os.path.join instead
         path = self.plugin_dir + '/demo/demo.shp'
 
         layer = QgsVectorLayer(path, 'Cartogram demo layer', 'ogr')
@@ -131,6 +132,7 @@ class Cartogram:
 
     def worker_start(self, layer, field_name, iterations):
         """Start a worker instance on a background thread."""
+
         worker = CartogramWorker(layer, field_name, iterations)
 
         message_bar = self.iface.messageBar().createMessage('')
@@ -187,7 +189,7 @@ class Cartogram:
                 level=QgsMessageBar.INFO, duration=3)
 
     def worker_error(self, e, exception_string):
-        message = 'Worker thread exception:\n'.format(exception_string)
+        message = 'Worker thread exception: {}'.format(exception_string)
         QgsMessageLog.logMessage(message, level=QgsMessageLog.CRITICAL)
 
     def validate(self):
