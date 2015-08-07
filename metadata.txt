@@ -7,6 +7,7 @@ version=1.0.0
 author=Carson Farmer, Morten Wulff
 email=wulff@ratatosk.net
 tags=geometry, layers, polygon, shapefile
+homepage=http://informeren.github.io/qgis/
 tracker=https://github.com/informeren/qgis-cartogram/issues
 repository=https://github.com/informeren/qgis-cartogram
 category=Vector
