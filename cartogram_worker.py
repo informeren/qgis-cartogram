@@ -81,7 +81,10 @@ class CartogramWorker(QObject):
             total_area += area
 
             feature_value = feature.attribute(field)
-            total_value += feature_value
+            if feature_value is None:
+                total_value += 0
+            else:
+                total_value += feature_value
 
             meta_feature.area = area
             meta_feature.value = feature_value
