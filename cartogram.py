@@ -124,8 +124,7 @@ class Cartogram:
         self.worker_start(memory_layer, input_field, iterations)
 
     def demo(self):
-        # TODO: use os.path.join instead
-        path = self.plugin_dir + '/demo/demo.shp'
+        path = os.path.join(self.plugin_dir, 'demo', 'demo.shp')
 
         layer = QgsVectorLayer(path, 'Cartogram demo layer', 'ogr')
         QgsMapLayerRegistry.instance().addMapLayer(layer)
