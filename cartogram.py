@@ -1,5 +1,5 @@
-from PyQt4.QtCore import (Qt, QCoreApplication, QSettings, QThread,
-    QTranslator, qVersion)
+from PyQt4.QtCore import (Qt, QCoreApplication, QPyNullVariant, QSettings,
+    QThread, QTranslator, qVersion)
 from PyQt4.QtGui import (QAction, QPushButton, QDialog, QIcon, QLabel,
     QMessageBox, QProgressBar)
 from qgis.core import (QGis, QgsDistanceArea, QgsGeometry, QgsMapLayer,
@@ -209,6 +209,32 @@ class Cartogram:
         if message:
             QMessageBox.warning(self.dialog, 'Cartogram', message)
         else:
+            # get the select layer and field
+            layer_name = self.dialog.sourceLayerCombo.currentText()
+            layer = self.get_vector_layer_by_name(layer_name)
+            field = self.dialog.sourceFieldCombo.currentText()
+
+            # loop through the input data to make sure no rows contain zero or
+            # null values
+            zero_null = None
+            for feature in layer.dataProvider().getFeatures():
+                feature_value = feature.attribute(field)
+                if type(feature_value) is QPyNullVariant or feature_value == 0:
+                    zero_null = 1
+
+            # ask the user if she wants to continue if one or more zero or null
+            # rows are found in the input data
+            if zero_null is not None:
+                message = self.tr('One or more rows in your "area" column '
+                    'contain zero or NULL values. Do you want to continue '
+                    'anyway with modified (non-zero) values for those fields?')
+                reply = QMessageBox.question(self.dialog, 'Cartogram',
+                    message, QMessageBox.Cancel, QMessageBox.Ok)
+
+                if reply == QMessageBox.Cancel:
+                    self.dialog.reject()
+                    return False
+
             self.dialog.accept()
 
     # noinspection PyMethodMayBeStatic
