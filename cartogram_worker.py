@@ -1,5 +1,5 @@
-from PyQt4.QtCore import pyqtSignal, QObject
-from qgis.core import QgsDistanceArea, QgsGeometry, QgsMessageLog, QgsPoint
+from PyQt4.QtCore import pyqtSignal, QObject, QPyNullVariant
+from qgis.core import QgsDistanceArea, QgsGeometry, QgsPoint
 
 from cartogram_feature import CartogramFeature
 
