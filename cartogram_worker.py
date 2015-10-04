@@ -76,6 +76,9 @@ class CartogramWorker(QObject):
         total_area = 0.0
         total_value = 0.0
 
+        if self.min_value is None:
+            self.min_value = self.get_min_value(data_provider, field)
+
         for feature in data_provider.getFeatures():
             meta_feature = CartogramFeature()
 
@@ -85,10 +88,10 @@ class CartogramWorker(QObject):
             total_area += area
 
             feature_value = feature.attribute(field)
-            if feature_value is None:
-                total_value += 0
-            else:
-                total_value += feature_value
+            if type(feature_value) is QPyNullVariant or feature_value == 0:
+                feature_value = self.min_value / 100
+
+            total_value += feature_value
 
             meta_feature.area = area
             meta_feature.value = feature_value
@@ -201,3 +204,13 @@ class CartogramWorker(QObject):
             step = 2
 
         return step
+
+    def get_min_value(self, data_provider, field):
+        features = []
+        for feature in data_provider.getFeatures():
+            feature_value = feature.attribute(field)
+            if not type(feature_value) is QPyNullVariant \
+                and feature_value != 0:
+                features.append(feature.attribute(field))
+
+        return min(features)
