@@ -26,7 +26,7 @@ class CartogramWorker(QObject):
         # zero or null values in the column used to create the cartogram
         self.min_value = None
 
-        # set default exit code – if this doesn't change everything went well
+        # set default exit code - if this doesn't change everything went well
         self.exit_code = -1
 
     def run(self):
