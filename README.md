@@ -31,7 +31,7 @@ When the cartogram has been generated it is automatically added to your canvas s
 Limitations
 -----------
 
-The algorithm only supports positive values as the basis for creating the cartograms. If your dataset contains zero or NULL values, we try to create suitable replacment values to make it possible to render a cartogram anyway.
+The algorithm only supports positive values as the basis for creating the cartograms. If your dataset contains zero or NULL values, we try to create suitable replacement values to make it possible to render a cartogram anyway.
 
 
 Further reading
