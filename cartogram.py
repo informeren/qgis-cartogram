@@ -189,8 +189,14 @@ class Cartogram:
                     level=QgsMessageBar.INFO, duration=3)
 
     def worker_error(self, e, exception_string):
-        message = 'Worker thread exception: {}'.format(exception_string)
-        QgsMessageLog.logMessage(message, level=QgsMessageLog.CRITICAL)
+        message = self.tr('An error ocurred during cartogram creation. '
+            'Please see the "Plugins" log for details.')
+        self.iface.messageBar().pushMessage('Error', message,
+            level=QgsMessageBar.CRITICAL, duration=5)
+
+        log = 'Worker thread exception: {}'.format(exception_string)
+        QgsMessageLog.logMessage(log, level=QgsMessageLog.CRITICAL,
+            tag='Plugins')
 
     def validate(self):
         """Make sure that all fields have valid values."""
