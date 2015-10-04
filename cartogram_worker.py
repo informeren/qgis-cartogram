@@ -10,7 +10,7 @@ import traceback
 class CartogramWorker(QObject):
     """Background worker which actually creates the cartogram."""
 
-    finished = pyqtSignal(object)
+    finished = pyqtSignal(object, int)
     error = pyqtSignal(Exception, basestring)
     progress = pyqtSignal(float)
 
@@ -22,7 +22,11 @@ class CartogramWorker(QObject):
         self.field_name = field_name
         self.iterations = iterations
 
-        self.killed = False
+        # used to store the computed minimum value when the input data contains
+        # zero or null values in the column used to create the cartogram
+        self.min_value = None
+
+        self.exit_code = -1
 
     def run(self):
         ret = None
@@ -39,7 +43,7 @@ class CartogramWorker(QObject):
                     self.layer, self.field_name)
 
                 for feature in self.layer.getFeatures():
-                    if self.killed is True:
+                    if self.exit_code > 0:
                         break
 
                     old_geometry = feature.geometry()
@@ -53,16 +57,16 @@ class CartogramWorker(QObject):
                     if step == 0 or steps % step == 0:
                         self.progress.emit(steps / float(feature_count) * 100)
 
-            if self.killed is False:
+            if self.exit_code == -1:
                 self.progress.emit(100)
                 ret = self.layer
         except Exception, e:
             self.error.emit(e, traceback.format_exc())
 
-        self.finished.emit(ret)
+        self.finished.emit(ret, self.exit_code)
 
     def kill(self):
-        self.killed = True
+        self.exit_code = 1
 
     def get_reduction_factor(self, layer, field):
         """Calculate the reduction factor."""

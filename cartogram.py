@@ -170,7 +170,7 @@ class Cartogram:
         self.thread = thread
         self.worker = worker
 
-    def worker_finished(self, layer):
+    def worker_finished(self, layer, exit_code):
         """Clean up after the worker and the thread."""
 
         self.worker.deleteLater()
@@ -183,9 +183,10 @@ class Cartogram:
         if layer is not None:
             QgsMapLayerRegistry.instance().addMapLayer(layer)
         else:
-            message = self.tr('Cartogram creation cancelled by user.')
-            self.iface.messageBar().pushMessage(message,
-                level=QgsMessageBar.INFO, duration=3)
+            if (exit_code == 1):
+                message = self.tr('Cartogram creation cancelled by user.')
+                self.iface.messageBar().pushMessage(message,
+                    level=QgsMessageBar.INFO, duration=3)
 
     def worker_error(self, e, exception_string):
         message = 'Worker thread exception: {}'.format(exception_string)
