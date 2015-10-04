@@ -28,6 +28,12 @@ Select the newly added demo layer and the *VOTERS* field and set the number of i
 When the cartogram has been generated it is automatically added to your canvas so you can continue working with it or export it in any of the file formats supported by QGIS.
 
 
+Limitations
+-----------
+
+The algorithm only supports positive values as the basis for creating the cartograms. If your dataset contains zero or NULL values, we try to create suitable replacment values to make it possible to render a cartogram anyway.
+
+
 Further reading
 ---------------
 
